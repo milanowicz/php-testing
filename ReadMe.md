@@ -1,10 +1,16 @@
 # PHP Thread
-![Test](https://github.com/Milanowicz/php-testing/workflows/Testing/badge.svg?branch=master)
+![Test](https://github.com/milanowicz/php-testing/workflows/Testing/badge.svg?branch=master)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FMilanowicz%2Fphp-testing%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/Milanowicz/php-testing/master)
 [![codecov](https://codecov.io/gh/Milanowicz/php-testing/branch/master/graph/badge.svg?token=42G6ETI9NV)](https://codecov.io/gh/Milanowicz/php-testing)
 
+![](https://img.shields.io/github/v/tag/milanowicz/php-testing)
 ![](https://img.shields.io/github/repo-size/milanowicz/php-testing)
 ![](https://img.shields.io/github/languages/code-size/milanowicz/php-testing)
+
+![](https://img.shields.io/packagist/v/milanowicz/php-testing)
+![](https://img.shields.io/packagist/dt/milanowicz/php-testing)
+![](https://img.shields.io/packagist/dd/milanowicz/php-testing)
+![](https://img.shields.io/packagist/dm/milanowicz/php-testing)
 
 Library for PHPUnit testing.
 
