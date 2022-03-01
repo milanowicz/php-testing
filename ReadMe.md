@@ -13,7 +13,7 @@ PHP-Library for PHPUnit testing.
 
 Install by Composer
 
-    $ composer require milanowicz/php-testing
+    $ composer require --dev milanowicz/php-testing
 
 Usage for abstract class TestCase:
 
