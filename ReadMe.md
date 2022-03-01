@@ -1,6 +1,6 @@
 # PHP Thread
 ![Test](https://github.com/Milanowicz/php-testing/workflows/Testing/badge.svg?branch=master)
-[![Mutation testing](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FMilanowicz%2Fphp-testing%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/Milanowicz/php-testing/main)
+[![Mutation testing](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FMilanowicz%2Fphp-testing%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/Milanowicz/php-testing/master)
 [![codecov](https://codecov.io/gh/Milanowicz/php-testing/branch/master/graph/badge.svg?token=42G6ETI9NV)](https://codecov.io/gh/Milanowicz/php-testing)
 
 ![](https://img.shields.io/github/repo-size/milanowicz/php-testing)
