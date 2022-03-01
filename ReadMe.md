@@ -6,7 +6,7 @@
 ![](https://img.shields.io/github/repo-size/milanowicz/php-testing)
 ![](https://img.shields.io/github/languages/code-size/milanowicz/php-testing)
 
-PHP-Library for PHPUnit testing.
+Library for PHPUnit testing.
 
 
 ## Usage
