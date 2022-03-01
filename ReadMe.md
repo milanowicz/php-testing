@@ -44,4 +44,3 @@ Usage for ExceptionAssertionFailed to got data in Exception:
     $t->getMessage(); // => 'Testing'
     $t->getCode(); // => 1
     $t->getPrevious(); // => null OR a Throwable object
-
