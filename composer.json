@@ -1,7 +1,8 @@
 {
   "name": "milanowicz/php-testing",
   "type": "php-library",
-  "description": "PHP-Library for PHPUnit testing",
+  "description": "Library for PHPUnit testing",
+  "license": "GPL-3.0-or-later",
   "authors": [
     {
       "name": "milanowicz",
