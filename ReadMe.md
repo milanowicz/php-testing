@@ -44,6 +44,25 @@ class TestCaseTest extends Milanowicz\Testing\TestCase
 }
 ```
 
+OR import Trait for using it:
+
+```php
+class TestCaseTest extends What\Ever\TestCase
+    use Milanowicz\Testing\TestTrait;
+
+    public function testSomething
+    {
+        $this->accessMethod(ClassObject, MethodName);
+        $this->createInstanceWithoutConstructor(ClassName);
+        $this->invokeMethod(ClassObject, MethodName, Arguments for Method);
+        $this->setProperty(ClassObject, PropertyName, PropertyValue);
+        $this->getProperty(ClassObject, PropertyName);
+        $this->tryTest(Function, NumberOfTries);
+        $this->loopingTest(Function, NumberOfTries);
+    }
+}
+```
+
 Usage for ExceptionAssertionFailed to got data in Exception:
 
 ```php
