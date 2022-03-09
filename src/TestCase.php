@@ -7,4 +7,5 @@ namespace Milanowicz\Testing;
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     use TestTrait;
+    use TestPerformanceTrait;
 }

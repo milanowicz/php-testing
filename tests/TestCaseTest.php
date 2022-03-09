@@ -6,9 +6,9 @@ namespace Milanowicz\Testing;
 
 use Error;
 use InvalidArgumentException;
+use PHPUnit\Framework\ExpectationFailedException;
 use RuntimeException;
 use stdClass;
-use Throwable;
 
 final class TestCaseTest extends TestCase
 {
@@ -21,19 +21,6 @@ final class TestCaseTest extends TestCase
         $this->assertNull($test->getObject());
     }
 
-    public function testConstructSetter(): void
-    {
-        $test = new TestChildObject([
-            'array' => [1],
-            'float' => 5.5,
-            'int' => 3,
-        ]);
-        $this->assertEquals([1], $test->getArray());
-        $this->assertEquals(5.5, $test->getFloat());
-        $this->assertEquals(3, $test->getInt());
-        $this->assertNull($test->getObject());
-    }
-
     public function testConstructException(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -41,19 +28,44 @@ final class TestCaseTest extends TestCase
         new TestChildObject(['sadsad' => 1]);
     }
 
-    public function testAccessMethod(): void
+    /**
+     * @dataProvider dataTestChildObject
+     */
+    public function testConstructSetter(array $data): void
     {
-        $data = [
-            'array' => [1],
-            'float' => 5.5,
-            'int' => 3,
-        ];
+        $test = new TestChildObject($data);
+        $this->assertEquals($data['array'], $test->getArray());
+        $this->assertEquals($data['float'], $test->getFloat());
+        $this->assertEquals($data['int'], $test->getInt());
+        $this->assertNull($test->getObject());
+    }
+
+    /**
+     * @dataProvider dataTestChildObject
+     */
+    public function testAccessMethod(array $data): void
+    {
         $test = new TestChildObject();
         $this->invokeMethod($test, 'setter', $data);
-        $this->assertEquals([1], $test->getArray());
-        $this->assertEquals(5.5, $test->getFloat());
-        $this->assertEquals(3, $test->getInt());
+        $this->assertEquals($data['array'], $test->getArray());
+        $this->assertEquals($data['float'], $test->getFloat());
+        $this->assertEquals($data['int'], $test->getInt());
         $this->assertNull($test->getObject());
+    }
+
+    public function dataTestChildObject(): array
+    {
+        return [
+            [[
+                'array' => [1],
+                'float' => 5.5,
+                'int' => 3,
+            ]], [[
+                'array' => [1, 'asd'],
+                'float' => -5,
+                'int' => -3,
+            ]]
+        ];
     }
 
     public function testCreateInstanceWithoutConstructor(): void
@@ -103,11 +115,11 @@ final class TestCaseTest extends TestCase
         $this->assertEquals(1, $count->counter);
     }
 
-    public function testTryTestException(): void
+    /**
+     * @dataProvider dataCountObject
+     */
+    public function testTryTestException(stdClass $count): void
     {
-        $count = new stdClass();
-        $count->counter = 0;
-
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Too Many Loops!');
         $cb = static function () use ($count) {
@@ -117,16 +129,17 @@ final class TestCaseTest extends TestCase
 
         try {
             $this->tryTest($cb);
-        } catch (Throwable $t) {
+        } catch (RuntimeException $t) {
             $this->assertEquals(3, $count->counter);
             throw $t;
         }
     }
 
-    public function testLoopingTest(): void
+    /**
+     * @dataProvider dataCountObject
+     */
+    public function testLoopingTest(stdClass $count): void
     {
-        $count = new stdClass();
-        $count->counter = 0;
         $cb = static function () use ($count) {
             $count->counter++;
         };
@@ -134,11 +147,11 @@ final class TestCaseTest extends TestCase
         $this->assertEquals(5, $count->counter);
     }
 
-    public function testLoopingTestException(): void
+    /**
+     * @dataProvider dataCountObject
+     */
+    public function testLoopingTestException(stdClass $count): void
     {
-        $count = new stdClass();
-        $count->counter = 0;
-
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Too Many Loops!');
         $cb = static function () use ($count) {
@@ -148,9 +161,16 @@ final class TestCaseTest extends TestCase
 
         try {
             $this->loopingTest($cb);
-        } catch (Throwable $t) {
+        } catch (RuntimeException $t) {
             $this->assertEquals(5, $count->counter);
             throw $t;
         }
+    }
+
+    public function dataCountObject(): array
+    {
+        $count = new stdClass();
+        $count->counter = 0;
+        return [[$count]];
     }
 }

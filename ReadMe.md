@@ -24,41 +24,69 @@ Library for PHPUnit testing.
 Install by Composer
 
 ```shell
-$ composer require --dev milanowicz/php-testing
+> composer require --dev milanowicz/php-testing
 ```
 
 Usage for abstract class TestCase:
 
 ```php
-class TestCaseTest extends Milanowicz\Testing\TestCase
-    public function testSomething
+class ClassTest extends Milanowicz\Testing\TestCase
+    public function testSomething(): void
     {
-        $this->accessMethod(ClassObject, MethodName);
-        $this->createInstanceWithoutConstructor(ClassName);
-        $this->invokeMethod(ClassObject, MethodName, Arguments for Method);
-        $this->setProperty(ClassObject, PropertyName, PropertyValue);
-        $this->getProperty(ClassObject, PropertyName);
-        $this->tryTest(Function, NumberOfTries);
-        $this->loopingTest(Function, NumberOfTries);
+        $this->accessMethod((object) Class, (string) Method);
+        $this->createInstanceWithoutConstructor((string) Class);
+        $this->invokeMethod((object) Class, (string) Method, (mixed) ArgumentsForMethod);
+        $this->setProperty((object) Class, (string) Property, (mixed) PropertyValue);
+        $this->getProperty((object) Class, (string) Property);
+        $this->tryTest((callable) Function, (int) NumberOfTries);
+        $this->loopingTest((callable) Function, (int) NumberOfTries);
+        // and all other Traits too, see below
     }
 }
 ```
 
-OR import Trait for using it:
+OR import Trait(s) for using:
 
 ```php
-class TestCaseTest extends What\Ever\TestCase
+class ClassTest extends What\Ever\TestCase
     use Milanowicz\Testing\TestTrait;
 
-    public function testSomething
+    public function testSomething(): void
     {
-        $this->accessMethod(ClassObject, MethodName);
-        $this->createInstanceWithoutConstructor(ClassName);
-        $this->invokeMethod(ClassObject, MethodName, Arguments for Method);
-        $this->setProperty(ClassObject, PropertyName, PropertyValue);
-        $this->getProperty(ClassObject, PropertyName);
-        $this->tryTest(Function, NumberOfTries);
-        $this->loopingTest(Function, NumberOfTries);
+        $this->accessMethod((object) Class, (string) Method);
+        $this->createInstanceWithoutConstructor((string) Class);
+        $this->invokeMethod((object) Class, (string) Method, (mixed) ArgumentsForMethod);
+        $this->setProperty((object) Class, (string) Property, (mixed) PropertyValue);
+        $this->getProperty((object) Class, (string) Property);
+        $this->tryTest((callable) Function, (int) NumberOfTries);
+        $this->loopingTest((callable) Function, (int) NumberOfTries);
+    }
+}
+
+```
+
+TestPerformanceTrait is to execute two functions and see which was faster of those:
+
+```php
+class ClassTest extends What\Ever\TestCase
+    use Milanowicz\Testing\TestPerformanceTrait;
+
+    public function testSomething(): void
+    {
+        $cb1 = static function () {
+            usleep(100);
+        };
+        $cb2 = static function () {
+            usleep(200);
+        };
+
+        $this->measurePerformanceTime($cb1, $cb2);
+        $this->checkPerformanceTime(); // $cb1 should be faster 
+        $this->checkPerformanceTime(false); // $cb2 should be slower and throw an Exception
+        $this->checkStudentTest(); // Check if $cb1 is significant faster
+
+        $this->getPerformanceMeasures(); // Get all time measures 
+        $this->getPerformanceStats(); // Get both in array with AVG, STD and Median 
     }
 }
 ```
@@ -67,10 +95,10 @@ Usage for ExceptionAssertionFailed to got data in Exception:
 
 ```php
 $t = new ExceptionAssertionFailed(
-    string $message = 'Testing',
-    array $data = [1],
-    int $code = 1,
-    ?Throwable $previous = null,
+    (string) $message = 'Testing',
+    (array) $data = [1],
+    (int) $code = 1,
+    (null|Throwable) $previous = null,
 );
 $t->toArray(); // => [1]
 $t->count(); // => 1
@@ -87,27 +115,27 @@ $t->getPrevious(); // => null OR a Throwable object
 
 Run all test suites
 ```shell
-$ composer tests
+> composer tests
 ```
 
 Run PHP CS Fixer to code styling
 ```shell
-$ composer style
+> composer style
 ```
 
 Run PHPStan to analyze
 ```shell
-$ composer anlayze
+> composer anlayze
 ```
 
 Run PHPUnit tests
 ```shell
-$ composer test
+> composer test
 ```
 
 Run Mutation tests by Infection
 ```shell
-$ composer infection
+> composer infection
 ```
 
 
