@@ -6,7 +6,7 @@ namespace Milanowicz\Testing;
 
 use PHPUnit\Framework\SelfDescribing;
 
-interface ExceptionAssertionFailedInterface extends \Countable, SelfDescribing
+interface ExceptionAssertionFailedInterface extends \Countable, SelfDescribing, \Throwable
 {
     /**
      * Get an array.

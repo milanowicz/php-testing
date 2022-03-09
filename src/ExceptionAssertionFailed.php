@@ -10,16 +10,13 @@ use Throwable;
 final class ExceptionAssertionFailed extends AssertionFailedError implements
     ExceptionAssertionFailedInterface
 {
-    private array $data;
-
     public function __construct(
-        string $message = '',
-        array $data = [],
-        int $code = 0,
-        ?Throwable $previous = null,
+        private string $title,
+        private array  $data = [],
+        int            $code = 0,
+        ?Throwable     $previous = null,
     ) {
-        parent::__construct($message, $code, $previous);
-        $this->data = $data;
+        parent::__construct($this->toString(), $code, $previous);
     }
 
     public function toArray(): array
@@ -29,11 +26,34 @@ final class ExceptionAssertionFailed extends AssertionFailedError implements
 
     public function toString(): string
     {
-        if ($this->count() < 1) {
-            return $this->getMessage();
+        if ($this->count() === 0) {
+            return $this->title;
         }
 
-        return $this->getMessage() . PHP_EOL . print_r($this->data, true);
+        return $this->title
+            . PHP_EOL
+            . PHP_EOL
+            . ' Data:'
+            . PHP_EOL
+            . $this->formatString($this->data)
+            . PHP_EOL;
+    }
+
+    private function formatString(
+        array &$data,
+        string $output = '',
+        int $steps = 2
+    ): string {
+        foreach ($data as $key => $value) {
+            $output .= str_repeat(' ', $steps);
+            if (is_array($value)) {
+                $output .= $key . ':' . PHP_EOL;
+                $output = $this->formatString($this->data[$key], $output, ($steps + 2));
+            } else {
+                $output .= $key . ' => ' . $value . PHP_EOL;
+            }
+        }
+        return $output;
     }
 
     public function count(): int

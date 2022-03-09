@@ -43,7 +43,7 @@ final class ExceptionAssertionFailedTest extends TestCase
         $t = new ExceptionAssertionFailed('TESTING', $data);
         $this->assertEquals($data, $t->toArray());
         $this->assertEquals(2, $t->count());
-        $this->assertEquals('TESTING', $t->getMessage());
+        $this->assertEquals($t->toString(), $t->getMessage());
         $this->assertEquals(0, $t->getCode());
         $this->assertNull($t->getPrevious());
     }
@@ -54,11 +54,19 @@ final class ExceptionAssertionFailedTest extends TestCase
         $this->assertEquals('TESTING', $t->toString());
 
         $data = [
-            'asdsa' => 1
+            'asdsa' => 1,
+            'array' => [
+                'test' => 2
+            ]
         ];
+
         $t = new ExceptionAssertionFailed('TESTING', $data);
         $this->assertEquals(
-            'TESTING' . PHP_EOL . print_r($data, true),
+            'TESTING' . PHP_EOL . PHP_EOL
+            . ' Data:' . PHP_EOL
+            . '  asdsa => 1' . PHP_EOL
+            . '  array:' . PHP_EOL
+            . '    test => 2' . PHP_EOL . PHP_EOL,
             $t->toString()
         );
     }
