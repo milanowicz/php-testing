@@ -15,38 +15,40 @@ final class TestPerformanceTest extends TestCase
         callable $cb1,
         callable $cb2
     ): void {
-        $this->measurePerformanceTime($cb1, $cb2);
-        $this->assertCount(2, $this->getPerformanceMeasures());
-        $this->assertCount(20, $this->getPerformanceMeasures()['func1']);
-        $this->assertCount(20, $this->getPerformanceMeasures()['func2']);
+        $this->tryTest(function () use ($cb1, $cb2) {
+            $this->measurePerformanceTime($cb1, $cb2);
+            $this->assertCount(2, $this->getPerformanceMeasures());
+            $this->assertCount(20, $this->getPerformanceMeasures()['func1']);
+            $this->assertCount(20, $this->getPerformanceMeasures()['func2']);
 
-        $data = $this->getPerformanceStats();
-        $this->assertArrayHasKey('func1', $data);
-        $this->assertGreaterThan(0, $data['func1']['mean']);
-        $this->assertLessThan(1, $data['func1']['mean']);
-        $this->assertGreaterThan(0, $data['func1']['sd']);
-        $this->assertLessThan(1, $data['func1']['sd']);
-        $this->assertGreaterThan(0, $data['func1']['median']);
-        $this->assertLessThan(1, $data['func1']['median']);
-        $this->assertEquals(20, $data['func1']['n']);
+            $data = $this->getPerformanceStats();
+            $this->assertArrayHasKey('func1', $data);
+            $this->assertGreaterThan(0, $data['func1']['mean']);
+            $this->assertLessThan(1, $data['func1']['mean']);
+            $this->assertGreaterThan(0, $data['func1']['sd']);
+            $this->assertLessThan(1, $data['func1']['sd']);
+            $this->assertGreaterThan(0, $data['func1']['median']);
+            $this->assertLessThan(1, $data['func1']['median']);
+            $this->assertEquals(20, $data['func1']['n']);
 
-        $this->assertArrayHasKey('func2', $data);
-        $this->assertGreaterThan(0, $data['func2']['mean']);
-        $this->assertLessThan(1, $data['func2']['mean']);
-        $this->assertGreaterThan(0, $data['func2']['sd']);
-        $this->assertLessThan(1, $data['func2']['sd']);
-        $this->assertGreaterThan(0, $data['func2']['median']);
-        $this->assertLessThan(1, $data['func2']['median']);
-        $this->assertEquals(20, $data['func2']['n']);
+            $this->assertArrayHasKey('func2', $data);
+            $this->assertGreaterThan(0, $data['func2']['mean']);
+            $this->assertLessThan(1, $data['func2']['mean']);
+            $this->assertGreaterThan(0, $data['func2']['sd']);
+            $this->assertLessThan(1, $data['func2']['sd']);
+            $this->assertGreaterThan(0, $data['func2']['median']);
+            $this->assertLessThan(1, $data['func2']['median']);
+            $this->assertEquals(20, $data['func2']['n']);
 
-        $this->checkPerformanceTime();
+            $this->checkPerformanceTime();
 
-        try {
-            $this->checkPerformanceTime(false);
-        } catch (ExpectationFailedException $exception) {
-            $this->assertInstanceOf(ExpectationFailedException::class, $exception);
-            $this->assertStringContainsString('func1 < func2', $exception->getMessage());
-        }
+            try {
+                $this->checkPerformanceTime(false);
+            } catch (ExpectationFailedException $exception) {
+                $this->assertInstanceOf(ExpectationFailedException::class, $exception);
+                $this->assertStringContainsString('func1 < func2', $exception->getMessage());
+            }
+        });
     }
 
     /**
@@ -56,38 +58,40 @@ final class TestPerformanceTest extends TestCase
         callable $cb2,
         callable $cb1
     ): void {
-        $this->measurePerformanceTime($cb1, $cb2);
-        $this->assertCount(2, $this->getPerformanceMeasures());
-        $this->assertCount(20, $this->getPerformanceMeasures()['func1']);
-        $this->assertCount(20, $this->getPerformanceMeasures()['func2']);
+        $this->tryTest(function () use ($cb1, $cb2) {
+            $this->measurePerformanceTime($cb1, $cb2);
+            $this->assertCount(2, $this->getPerformanceMeasures());
+            $this->assertCount(20, $this->getPerformanceMeasures()['func1']);
+            $this->assertCount(20, $this->getPerformanceMeasures()['func2']);
 
-        $data = $this->getPerformanceStats();
-        $this->assertArrayHasKey('func1', $data);
-        $this->assertGreaterThan(0, $data['func1']['mean']);
-        $this->assertLessThan(1, $data['func1']['mean']);
-        $this->assertGreaterThan(0, $data['func1']['sd']);
-        $this->assertLessThan(1, $data['func1']['sd']);
-        $this->assertGreaterThan(0, $data['func1']['median']);
-        $this->assertLessThan(1, $data['func1']['median']);
-        $this->assertEquals(20, $data['func1']['n']);
+            $data = $this->getPerformanceStats();
+            $this->assertArrayHasKey('func1', $data);
+            $this->assertGreaterThan(0, $data['func1']['mean']);
+            $this->assertLessThan(1, $data['func1']['mean']);
+            $this->assertGreaterThan(0, $data['func1']['sd']);
+            $this->assertLessThan(1, $data['func1']['sd']);
+            $this->assertGreaterThan(0, $data['func1']['median']);
+            $this->assertLessThan(1, $data['func1']['median']);
+            $this->assertEquals(20, $data['func1']['n']);
 
-        $this->assertArrayHasKey('func2', $data);
-        $this->assertGreaterThan(0, $data['func2']['mean']);
-        $this->assertLessThan(1, $data['func2']['mean']);
-        $this->assertGreaterThan(0, $data['func2']['sd']);
-        $this->assertLessThan(1, $data['func2']['sd']);
-        $this->assertGreaterThan(0, $data['func2']['median']);
-        $this->assertLessThan(1, $data['func2']['median']);
-        $this->assertEquals(20, $data['func2']['n']);
+            $this->assertArrayHasKey('func2', $data);
+            $this->assertGreaterThan(0, $data['func2']['mean']);
+            $this->assertLessThan(1, $data['func2']['mean']);
+            $this->assertGreaterThan(0, $data['func2']['sd']);
+            $this->assertLessThan(1, $data['func2']['sd']);
+            $this->assertGreaterThan(0, $data['func2']['median']);
+            $this->assertLessThan(1, $data['func2']['median']);
+            $this->assertEquals(20, $data['func2']['n']);
 
-        $this->checkPerformanceTime(false);
+            $this->checkPerformanceTime(false);
 
-        try {
-            $this->checkPerformanceTime();
-        } catch (ExpectationFailedException $exception) {
-            $this->assertInstanceOf(ExpectationFailedException::class, $exception);
-            $this->assertStringContainsString('func1 > func2', $exception->getMessage());
-        }
+            try {
+                $this->checkPerformanceTime();
+            } catch (ExpectationFailedException $exception) {
+                $this->assertInstanceOf(ExpectationFailedException::class, $exception);
+                $this->assertStringContainsString('func1 > func2', $exception->getMessage());
+            }
+        });
     }
 
     /**
@@ -97,23 +101,27 @@ final class TestPerformanceTest extends TestCase
         callable $cb1,
         callable $cb2
     ): void {
-        $this->measurePerformanceTime($cb1, $cb2);
-        $this->assertCount(2, $this->getPerformanceMeasures());
+        $this->tryTest(function () use ($cb1, $cb2) {
+            $this->measurePerformanceTime($cb1, $cb2);
+            $this->assertCount(2, $this->getPerformanceMeasures());
 
-        $this->checkPerformanceAll();
+            $this->checkPerformanceAll();
+        });
     }
 
     /**
      * @dataProvider dataCallbacks
      */
-    public function testStudentTestOne(
+    public function testStudentTest(
         callable $cb1,
         callable $cb2
     ): void {
-        $this->measurePerformanceTime($cb1, $cb2);
-        $this->assertCount(2, $this->getPerformanceMeasures());
+        $this->tryTest(function () use ($cb1, $cb2) {
+            $this->measurePerformanceTime($cb1, $cb2);
+            $this->assertCount(2, $this->getPerformanceMeasures());
 
-        $this->checkStudentTest();
+            $this->checkStudentTest();
+        });
     }
 
     public function dataCallbacks(): array
