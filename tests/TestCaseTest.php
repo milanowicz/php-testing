@@ -6,7 +6,6 @@ namespace Milanowicz\Testing;
 
 use Error;
 use InvalidArgumentException;
-use PHPUnit\Framework\ExpectationFailedException;
 use RuntimeException;
 use stdClass;
 
@@ -28,6 +27,21 @@ final class TestCaseTest extends TestCase
         new TestChildObject(['sadsad' => 1]);
     }
 
+    public function dataTestChildObject(): array
+    {
+        return [
+            [[
+                'array' => [1],
+                'float' => 5.5,
+                'int' => 3,
+            ]], [[
+                'array' => [1, 'asd'],
+                'float' => -5,
+                'int' => -3,
+            ]]
+        ];
+    }
+
     /**
      * @dataProvider dataTestChildObject
      */
@@ -45,27 +59,12 @@ final class TestCaseTest extends TestCase
      */
     public function testAccessMethod(array $data): void
     {
-        $test = new TestChildObject();
+        $test = new TestParentObject();
         $this->invokeMethod($test, 'setter', $data);
         $this->assertEquals($data['array'], $test->getArray());
         $this->assertEquals($data['float'], $test->getFloat());
         $this->assertEquals($data['int'], $test->getInt());
         $this->assertNull($test->getObject());
-    }
-
-    public function dataTestChildObject(): array
-    {
-        return [
-            [[
-                'array' => [1],
-                'float' => 5.5,
-                'int' => 3,
-            ]], [[
-                'array' => [1, 'asd'],
-                'float' => -5,
-                'int' => -3,
-            ]]
-        ];
     }
 
     public function testCreateInstanceWithoutConstructor(): void
@@ -88,12 +87,25 @@ final class TestCaseTest extends TestCase
         $test = new TestChildObject();
         $this->setProperty($test, 'float', 4.5);
         $this->assertEquals(4.5, $this->getProperty($test, 'float'));
+
+        $this->setProperty($test, 'hiddenProperty', 'showIt');
+        $this->assertEquals('showIt', $this->getProperty($test, 'hiddenProperty'));
     }
 
-    public function testGetProperty(): void
+    public function testSetPropertyByParent(): void
     {
         $test = new TestParentObject();
-        $this->assertEquals('hidden', $this->getProperty($test, 'hiddenProperty'));
+        $this->setProperty($test, 'hiddenProperty', 'showIt');
+        $this->assertEquals('showIt', $this->getProperty($test, 'hiddenProperty'));
+    }
+
+    public function testSetPropertyByParentException(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Could not find property wrongAttribute');
+
+        $test = new TestParentObject();
+        $this->setProperty($test, 'wrongAttribute', 'showIt');
     }
 
     public function testGetPropertyException(): void
@@ -104,10 +116,18 @@ final class TestCaseTest extends TestCase
         $this->getProperty($test, 'wrongAttribute');
     }
 
-    public function testTryTest(): void
+    public function dataCountObject(): array
     {
         $count = new stdClass();
         $count->counter = 0;
+        return [[$count]];
+    }
+
+    /**
+     * @dataProvider dataCountObject
+     */
+    public function testTryTest(stdClass $count): void
+    {
         $cb = static function () use ($count) {
             $count->counter++;
         };
@@ -165,12 +185,5 @@ final class TestCaseTest extends TestCase
             $this->assertEquals(5, $count->counter);
             throw $t;
         }
-    }
-
-    public function dataCountObject(): array
-    {
-        $count = new stdClass();
-        $count->counter = 0;
-        return [[$count]];
     }
 }

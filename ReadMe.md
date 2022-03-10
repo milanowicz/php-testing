@@ -27,7 +27,10 @@ Install by Composer
 > composer require --dev milanowicz/php-testing
 ```
 
-Usage for abstract class TestCase:
+
+### Methods
+
+Example for using abstract class in your ClassTest:
 
 ```php
 class ClassTest extends Milanowicz\Testing\TestCase
@@ -45,7 +48,7 @@ class ClassTest extends Milanowicz\Testing\TestCase
 }
 ```
 
-OR import Trait(s) for using:
+OR import Trait(s) for use it:
 
 ```php
 class ClassTest extends What\Ever\TestCase
@@ -80,21 +83,33 @@ class ClassTest extends What\Ever\TestCase
             usleep(200);
         };
 
-        $this->measurePerformanceTime($cb1, $cb2);
-        $this->checkPerformanceTime(); // $cb1 should be faster 
-        $this->checkPerformanceTime(false); // $cb2 should be slower and throw an Exception
-        $this->checkStudentTest(); // Check if $cb1 is significant faster
+        $this->measureTime((callable) $cb1, (callable) $cb2, (int) NumberOfTries);
+        // Check AVG and Student-Test
+        $this->checkPerformance((bool) $function1 = true, (float) $pValue = 0.05);
+        // $cb1 should be faster 
+        $this->checkMeanTime((bool) $function1 = true);
+        // $cb2 should be slower and throw an Exception 
+        $this->checkMeanTime((bool) false);
+        // Check if $cb1 is significant faster
+        $this->checkStudentTest((float) $pValue = 0.05);
 
-        $this->getPerformanceMeasures(); // Get all time measures 
-        $this->getPerformanceStats(); // Get both in array with AVG, STD and Median 
+        // Get all time measures
+        $this->getTimeMeasures();
+        // Get both in array with AVG, STD and Median 
+        $this->getTimeStats();
+        // Reset all times 
+        $this->resetTimes(); 
     }
 }
 ```
 
-Usage for ExceptionAssertionFailed to got data in Exception:
+
+### Exception
+
+Usage for AssertionFailedException to get data in Exception message:
 
 ```php
-$t = new ExceptionAssertionFailed(
+$t = new AssertionFailedException(
     (string) $message = 'Testing',
     (array) $data = [1],
     (int) $code = 1,
@@ -105,7 +120,7 @@ $t->count(); // => 1
 $t->toString(); // => Message and Data as String
 
 // and all Exception methods are available like this:
-$t->getMessage(); // => 'Testing'
+$t->getMessage(); // => Message and Data as String
 $t->getCode(); // => 1
 $t->getPrevious(); // => null OR a Throwable object
 ```

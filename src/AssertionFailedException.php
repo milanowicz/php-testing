@@ -7,14 +7,14 @@ namespace Milanowicz\Testing;
 use PHPUnit\Framework\AssertionFailedError;
 use Throwable;
 
-final class ExceptionAssertionFailed extends AssertionFailedError implements
-    ExceptionAssertionFailedInterface
+final class AssertionFailedException extends AssertionFailedError implements
+    AssertionFailedExceptionInterface
 {
     public function __construct(
         private string $title,
-        private array  $data = [],
-        int            $code = 0,
-        ?Throwable     $previous = null,
+        private array $data = [],
+        int $code = 0,
+        ?Throwable $previous = null,
     ) {
         parent::__construct($this->toString(), $code, $previous);
     }

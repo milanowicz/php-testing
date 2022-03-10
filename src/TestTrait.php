@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Milanowicz\Testing;
 
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
 use ReflectionProperty;
 use RuntimeException;
@@ -14,7 +13,7 @@ use Throwable;
 trait TestTrait
 {
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     final protected function accessMethod(
         object $class,
@@ -28,7 +27,7 @@ trait TestTrait
 
     /**
      * @throws RuntimeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     final protected function createInstanceWithoutConstructor(
         string $className
@@ -43,7 +42,7 @@ trait TestTrait
     }
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     final protected function invokeMethod(
         object $class,
@@ -56,20 +55,21 @@ trait TestTrait
     }
 
     /**
-     * @throws ReflectionException
+     * @throws RuntimeException
      */
     final protected function setProperty(
         object $class,
         string $property,
         mixed $value = null
     ): ReflectionProperty {
-        $method = new ReflectionProperty($class, $property);
-        /** @infection-ignore-all */
-        $this->accessible($method);
-        if ($value !== null) {
-            $method->setValue($class, $value);
+        $reflectionProperty = $this->getReflectionProperty($class, $property);
+        if ($reflectionProperty !== null) {
+            if ($value !== null) {
+                $reflectionProperty->setValue($class, $value);
+            }
+            return $reflectionProperty;
         }
-        return $method;
+        throw new RuntimeException('Could not find property ' . $property);
     }
 
     /**
@@ -79,6 +79,17 @@ trait TestTrait
         object $class,
         string $property
     ): mixed {
+        $reflectionProperty = $this->getReflectionProperty($class, $property);
+        if ($reflectionProperty !== null) {
+            return $reflectionProperty->getValue($class);
+        }
+        throw new RuntimeException('Could not find property ' . $property);
+    }
+
+    private function getReflectionProperty(
+        object $class,
+        string $property
+    ): null|ReflectionProperty {
         $reflectionClass = new ReflectionClass($class);
         do {
             if ($reflectionClass->hasProperty($property)) {
@@ -90,9 +101,9 @@ trait TestTrait
             $reflectionProperty = $reflectionClass->getProperty($property);
             /** @infection-ignore-all */
             $this->accessible($reflectionProperty);
-            return $reflectionProperty->getValue($class);
+            return $reflectionProperty;
         }
-        throw new RuntimeException('Could not find property ' . $property);
+        return null;
     }
 
     /**

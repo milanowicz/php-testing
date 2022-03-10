@@ -8,122 +8,6 @@ use PHPUnit\Framework\ExpectationFailedException;
 
 final class TestPerformanceTest extends TestCase
 {
-    /**
-     * @dataProvider dataCallbacks
-     */
-    public function testPerformanceMeasureOne(
-        callable $cb1,
-        callable $cb2
-    ): void {
-        $this->tryTest(function () use ($cb1, $cb2) {
-            $this->measurePerformanceTime($cb1, $cb2);
-            $this->assertCount(2, $this->getPerformanceMeasures());
-            $this->assertCount(20, $this->getPerformanceMeasures()['func1']);
-            $this->assertCount(20, $this->getPerformanceMeasures()['func2']);
-
-            $data = $this->getPerformanceStats();
-            $this->assertArrayHasKey('func1', $data);
-            $this->assertGreaterThan(0, $data['func1']['mean']);
-            $this->assertLessThan(1, $data['func1']['mean']);
-            $this->assertGreaterThan(0, $data['func1']['sd']);
-            $this->assertLessThan(1, $data['func1']['sd']);
-            $this->assertGreaterThan(0, $data['func1']['median']);
-            $this->assertLessThan(1, $data['func1']['median']);
-            $this->assertEquals(20, $data['func1']['n']);
-
-            $this->assertArrayHasKey('func2', $data);
-            $this->assertGreaterThan(0, $data['func2']['mean']);
-            $this->assertLessThan(1, $data['func2']['mean']);
-            $this->assertGreaterThan(0, $data['func2']['sd']);
-            $this->assertLessThan(1, $data['func2']['sd']);
-            $this->assertGreaterThan(0, $data['func2']['median']);
-            $this->assertLessThan(1, $data['func2']['median']);
-            $this->assertEquals(20, $data['func2']['n']);
-
-            $this->checkPerformanceTime();
-
-            try {
-                $this->checkPerformanceTime(false);
-            } catch (ExpectationFailedException $exception) {
-                $this->assertInstanceOf(ExpectationFailedException::class, $exception);
-                $this->assertStringContainsString('func1 < func2', $exception->getMessage());
-            }
-        });
-    }
-
-    /**
-     * @dataProvider dataCallbacks
-     */
-    public function testPerformanceMeasureTwo(
-        callable $cb2,
-        callable $cb1
-    ): void {
-        $this->tryTest(function () use ($cb1, $cb2) {
-            $this->measurePerformanceTime($cb1, $cb2);
-            $this->assertCount(2, $this->getPerformanceMeasures());
-            $this->assertCount(20, $this->getPerformanceMeasures()['func1']);
-            $this->assertCount(20, $this->getPerformanceMeasures()['func2']);
-
-            $data = $this->getPerformanceStats();
-            $this->assertArrayHasKey('func1', $data);
-            $this->assertGreaterThan(0, $data['func1']['mean']);
-            $this->assertLessThan(1, $data['func1']['mean']);
-            $this->assertGreaterThan(0, $data['func1']['sd']);
-            $this->assertLessThan(1, $data['func1']['sd']);
-            $this->assertGreaterThan(0, $data['func1']['median']);
-            $this->assertLessThan(1, $data['func1']['median']);
-            $this->assertEquals(20, $data['func1']['n']);
-
-            $this->assertArrayHasKey('func2', $data);
-            $this->assertGreaterThan(0, $data['func2']['mean']);
-            $this->assertLessThan(1, $data['func2']['mean']);
-            $this->assertGreaterThan(0, $data['func2']['sd']);
-            $this->assertLessThan(1, $data['func2']['sd']);
-            $this->assertGreaterThan(0, $data['func2']['median']);
-            $this->assertLessThan(1, $data['func2']['median']);
-            $this->assertEquals(20, $data['func2']['n']);
-
-            $this->checkPerformanceTime(false);
-
-            try {
-                $this->checkPerformanceTime();
-            } catch (ExpectationFailedException $exception) {
-                $this->assertInstanceOf(ExpectationFailedException::class, $exception);
-                $this->assertStringContainsString('func1 > func2', $exception->getMessage());
-            }
-        });
-    }
-
-    /**
-     * @dataProvider dataCallbacks
-     */
-    public function testCheckPerformanceAll(
-        callable $cb1,
-        callable $cb2
-    ): void {
-        $this->tryTest(function () use ($cb1, $cb2) {
-            $this->measurePerformanceTime($cb1, $cb2);
-            $this->assertCount(2, $this->getPerformanceMeasures());
-
-            $this->checkPerformanceAll();
-        });
-    }
-
-    /**
-     * @dataProvider dataCallbacks
-     */
-    public function testStudentTest(
-        callable $cb1,
-        callable $cb2
-    ): void {
-        $this->tryTest(function () use ($cb1, $cb2) {
-            $this->measurePerformanceTime($cb1, $cb2);
-            $this->assertCount(2, $this->getPerformanceMeasures());
-
-            $this->checkStudentTest();
-        });
-    }
-
     public function dataCallbacks(): array
     {
         return [
@@ -133,26 +17,138 @@ final class TestPerformanceTest extends TestCase
                 },
                 static function () {
                     usleep(100);
-                }
+                },
+                [
+                    'function1' => [
+                        1.1, 1.2, 1.1, 1.2, 1.1, 1.2
+                    ],
+                    'function2' => [
+                        1.2, 1.1, 1.2, 1.1, 1.2, 1.1
+                    ]
+                ]
             ]
         ];
     }
 
-    public function testStudentTestException(): void
-    {
-        $this->timeMeasures = [
-            'func1' => [
-                1.1, 1.2, 1.1, 1.2, 1.1, 1.2
-            ],
-            'func2' => [
-                1.2, 1.1, 1.2, 1.1, 1.2, 1.1
-            ]
-        ];
+    /**
+     * @dataProvider dataCallbacks
+     */
+    public function testPerformanceMeasureOne(
+        callable $cb1,
+        callable $cb2,
+        array $timeMeasures
+    ): void {
+        $this->tryTest(function () use ($cb1, $cb2, $timeMeasures) {
+            $this->checkMeasures($cb1, $cb2, $timeMeasures);
 
-        $this->expectException(ExceptionAssertionFailed::class);
+            $this->checkMeanTime();
+            try {
+                $this->checkMeanTime(false);
+            } catch (ExpectationFailedException $exception) {
+                $this->assertInstanceOf(ExpectationFailedException::class, $exception);
+                $this->assertStringContainsString('function1 < function2', $exception->getMessage());
+            }
+        });
+    }
+
+    /**
+     * @dataProvider dataCallbacks
+     */
+    public function testPerformanceMeasureTwo(
+        callable $cb2,
+        callable $cb1,
+        array $timeMeasures
+    ): void {
+        $this->tryTest(function () use ($cb1, $cb2, $timeMeasures) {
+            $this->checkMeasures($cb1, $cb2, $timeMeasures);
+
+            $this->checkMeanTime(false);
+            try {
+                $this->checkMeanTime();
+            } catch (ExpectationFailedException $exception) {
+                $this->assertInstanceOf(ExpectationFailedException::class, $exception);
+                $this->assertStringContainsString('function1 > function2', $exception->getMessage());
+            }
+        });
+    }
+
+    /**
+     * @dataProvider dataCallbacks
+     */
+    public function testCheckPerformanceAll(
+        callable $cb1,
+        callable $cb2,
+        array $timeMeasures
+    ): void {
+        $this->tryTest(function () use ($cb1, $cb2, $timeMeasures) {
+            $this->checkMeasures($cb1, $cb2, $timeMeasures);
+
+            $this->checkPerformance();
+        });
+    }
+
+    /**
+     * @dataProvider dataCallbacks
+     */
+    public function testStudentTest(
+        callable $cb1,
+        callable $cb2,
+        array $timeMeasures
+    ): void {
+        $this->tryTest(function () use ($cb1, $cb2, $timeMeasures) {
+            $this->checkMeasures($cb1, $cb2, $timeMeasures);
+
+            $this->checkStudentTest();
+        });
+    }
+
+    /**
+     * @dataProvider dataCallbacks
+     */
+    public function testStudentTestException(
+        callable $cb1,
+        callable $cb2,
+        array $timeMeasures
+    ): void {
+        $this->checkMeasures($cb1, $cb2, $timeMeasures);
+
+        $this->timeMeasures = $timeMeasures;
+        $this->expectException(AssertionFailedException::class);
         $this->expectExceptionMessageMatches('/p Value is bigger then expected/');
         $this->expectExceptionMessageMatches('/Data:/');
 
         $this->checkStudentTest();
+    }
+
+    private function checkMeasures(
+        callable $cb1,
+        callable $cb2,
+        array $timeMeasures
+    ): void {
+        $this->timeMeasures = $timeMeasures;
+        $this->measureTime($cb1, $cb2);
+
+        $this->assertCount(2, $this->getTimeMeasures());
+        $this->assertCount(20, $this->getTimeMeasures()['function1']);
+        $this->assertCount(20, $this->getTimeMeasures()['function2']);
+
+        $data = $this->getTimeStats();
+        $this->assertArrayHasKey('function1', $data);
+        $this->assertGreaterThan(0, $data['function1']['mean']);
+        $this->assertLessThan(1, $data['function1']['mean']);
+        $this->assertGreaterThan(0, $data['function1']['sd']);
+        $this->assertLessThan(1, $data['function1']['sd']);
+        $this->assertGreaterThan(0, $data['function1']['median']);
+        $this->assertLessThan(1, $data['function1']['median']);
+        $this->assertEquals(20, $data['function1']['n']);
+
+        $this->assertArrayHasKey('function2', $data);
+        $this->assertGreaterThan(0, $data['function2']['mean']);
+        $this->assertLessThan(1, $data['function2']['mean']);
+        $this->assertGreaterThan(0, $data['function2']['sd']);
+        $this->assertLessThan(1, $data['function2']['sd']);
+        $this->assertGreaterThan(0, $data['function2']['median']);
+        $this->assertLessThan(1, $data['function2']['median']);
+        $this->assertEquals(20, $data['function2']['n']);
     }
 }
