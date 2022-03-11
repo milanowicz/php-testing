@@ -84,7 +84,7 @@ final class TestPerformanceTest extends TestCase
             $this->checkMeasures($cb1, $cb2, $timeMeasures);
 
             $this->checkPerformance();
-        });
+        }, 10);
     }
 
     /**
