@@ -11,6 +11,7 @@ jobs:
 
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
         os: [macos-latest, ubuntu-latest]
         php-version: ["8.0", "8.1"]
