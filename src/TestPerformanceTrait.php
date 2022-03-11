@@ -15,7 +15,7 @@ trait TestPerformanceTrait
         callable $function1,
         callable $function2,
         int $n = 20
-    ): void {
+    ): self {
         $this->resetTimes();
         for ($i = 0; $i < $n; $i++) {
             $start = microtime(true);
@@ -30,6 +30,7 @@ trait TestPerformanceTrait
             $end = microtime(true);
             $this->timeMeasures['function2'][] = $end - $start;
         }
+        return $this;
     }
 
     /**
@@ -37,14 +38,14 @@ trait TestPerformanceTrait
      * @throws \MathPHP\Exception\BadDataException
      * @throws \MathPHP\Exception\OutOfBoundsException
      * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @infection-ignore-all
      */
     final protected function checkPerformance(
         bool $function1 = true,
         float $pValue = 0.05
-    ): void {
-        $this->checkMeanTime($function1);
-        $this->checkStudentTest($pValue);
+    ): self {
+        return $this
+            ->checkMeanTime($function1)
+            ->checkStudentTest($pValue);
     }
 
     /**
@@ -55,7 +56,7 @@ trait TestPerformanceTrait
      */
     final protected function checkMeanTime(
         bool $function1 = true
-    ): void {
+    ): self {
         if ($function1) {
             $this->assertGreaterThan(
                 $this->getTimeStats()['function1']['mean'],
@@ -69,6 +70,7 @@ trait TestPerformanceTrait
                 'function1 < function2'
             );
         }
+        return $this;
     }
 
     /**
@@ -77,7 +79,7 @@ trait TestPerformanceTrait
      */
     final protected function checkStudentTest(
         float $pValue = 0.05
-    ): void {
+    ): self {
         $data = Significance::tTestTwoSample(
             $this->timeMeasures['function1'],
             $this->timeMeasures['function2'],
@@ -90,6 +92,7 @@ trait TestPerformanceTrait
                 $data
             );
         }
+        return $this;
     }
 
     final protected function getTimeMeasures(): array
