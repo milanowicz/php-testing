@@ -13,7 +13,7 @@ final class TestPerformanceTest extends TestCase
         return [
             [
                 static function () {
-                    usleep(90);
+                    usleep(50);
                 },
                 static function () {
                     usleep(100);
