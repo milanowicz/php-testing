@@ -6,14 +6,19 @@ jobs:
   tests:
     name: "Tests"
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
 
     strategy:
       fail-fast: false
       matrix:
-        php-version:
-          - "8.0"
-          - "8.1"
+        os: [macos-latest, ubuntu-latest]
+        php-version: ["8.0", "8.1"]
+        experimental: [false]
+        include:
+          - php-version: "8.2"
+            os: ubuntu-latest
+            experimental: true
 
     steps:
       - name: "Install PHP"
@@ -44,5 +49,6 @@ jobs:
 
       - name: "Send coverage to codecov.io"
         uses: codecov/codecov-action@v1
+        if: matrix.experimental == false
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
