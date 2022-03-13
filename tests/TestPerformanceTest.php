@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Milanowicz\Testing;
 
-use PHPUnit\Framework\ExpectationFailedException;
-
 final class TestPerformanceTest extends TestCase
 {
     public function dataCallbacks(): array
@@ -42,12 +40,24 @@ final class TestPerformanceTest extends TestCase
             $this->checkMeasures($cb1, $cb2, $timeMeasures);
 
             $this->checkMeanTime();
-            try {
-                $this->checkMeanTime(false);
-            } catch (ExpectationFailedException $exception) {
-                $this->assertInstanceOf(ExpectationFailedException::class, $exception);
-                $this->assertStringContainsString('function1 < function2', $exception->getMessage());
-            }
+        });
+    }
+
+    /**
+     * @dataProvider dataCallbacks
+     */
+    public function testPerformanceMeasureOneException(
+        callable $cb1,
+        callable $cb2,
+        array $timeMeasures
+    ): void {
+        $this->tryTest(function () use ($cb1, $cb2, $timeMeasures) {
+            $this->checkMeasures($cb1, $cb2, $timeMeasures);
+
+            $this->expectException(AssertionFailedException::class);
+            $this->expectExceptionMessageMatches('/function1 < function2/');
+            $this->expectExceptionMessageMatches('/Data:/');
+            $this->checkMeanTime(false);
         });
     }
 
@@ -63,12 +73,24 @@ final class TestPerformanceTest extends TestCase
             $this->checkMeasures($cb1, $cb2, $timeMeasures);
 
             $this->checkMeanTime(false);
-            try {
-                $this->checkMeanTime();
-            } catch (ExpectationFailedException $exception) {
-                $this->assertInstanceOf(ExpectationFailedException::class, $exception);
-                $this->assertStringContainsString('function1 > function2', $exception->getMessage());
-            }
+        });
+    }
+
+    /**
+     * @dataProvider dataCallbacks
+     */
+    public function testPerformanceMeasureTwoException(
+        callable $cb2,
+        callable $cb1,
+        array $timeMeasures
+    ): void {
+        $this->tryTest(function () use ($cb1, $cb2, $timeMeasures) {
+            $this->checkMeasures($cb1, $cb2, $timeMeasures);
+
+            $this->expectException(AssertionFailedException::class);
+            $this->expectExceptionMessageMatches('/function1 > function2/');
+            $this->expectExceptionMessageMatches('/Data:/');
+            $this->checkMeanTime();
         });
     }
 
@@ -99,7 +121,30 @@ final class TestPerformanceTest extends TestCase
             $this->checkMeasures($cb1, $cb2, $timeMeasures);
 
             $this->checkStudentTest();
+            $this->assertCount(8, $this->getTimeSignificance());
         });
+    }
+
+    public function testStudentTestValueException(): void
+    {
+        $this->timeSignificance = [
+            'p1' => 0.0501
+        ];
+
+        $this->expectException(AssertionFailedException::class);
+        $this->expectExceptionMessageMatches('/function1 > function2/');
+        $this->expectExceptionMessageMatches('/Data:/');
+        $this->checkStudentTest();
+    }
+
+    public function testStudentTestValueLimes(): void
+    {
+        $this->timeSignificance = [
+            'p1' => 0.05
+        ];
+
+        $this->checkStudentTest();
+        $this->assertCount(1, $this->getTimeSignificance());
     }
 
     /**
@@ -128,6 +173,7 @@ final class TestPerformanceTest extends TestCase
         $this->timeMeasures = $timeMeasures;
         $this->measureTime($cb1, $cb2);
 
+        $this->assertCount(0, $this->getTimeSignificance());
         $this->assertCount(2, $this->getTimeMeasures());
         $this->assertCount(20, $this->getTimeMeasures()['function1']);
         $this->assertCount(20, $this->getTimeMeasures()['function2']);
@@ -150,5 +196,19 @@ final class TestPerformanceTest extends TestCase
         $this->assertGreaterThan(0, $data['function2']['median']);
         $this->assertLessThan(1, $data['function2']['median']);
         $this->assertEquals(20, $data['function2']['n']);
+    }
+
+    /**
+     * @dataProvider dataCallbacks
+     */
+    public function testResetTimes(
+        callable $cb1,
+        callable $cb2,
+        array $timeMeasures
+    ): void {
+        $this->checkMeasures($cb1, $cb2, $timeMeasures);
+        $this->clearTimes();
+        $this->assertCount(0, $this->getTimeMeasures());
+        $this->assertCount(0, $this->getTimeSignificance());
     }
 }
