@@ -110,7 +110,7 @@ final class TestPerformanceTest extends TestCase
 
             $this->checkStudentTest();
             $this->assertCount(8, $this->getTimeSignificance());
-        });
+        }, 10); // For MacOS Environment!
     }
 
     public function testCheckStudentTestValueException(): void
