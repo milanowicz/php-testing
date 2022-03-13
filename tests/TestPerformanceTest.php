@@ -31,7 +31,7 @@ final class TestPerformanceTest extends TestCase
     /**
      * @dataProvider dataCallbacks
      */
-    public function testPerformanceMeasureOne(
+    public function testCheckMeanTimeOne(
         callable $cb1,
         callable $cb2,
         array $timeMeasures
@@ -46,7 +46,7 @@ final class TestPerformanceTest extends TestCase
     /**
      * @dataProvider dataCallbacks
      */
-    public function testPerformanceMeasureOneException(
+    public function testCheckMeanTimeOneException(
         callable $cb1,
         callable $cb2,
         array $timeMeasures
@@ -58,13 +58,13 @@ final class TestPerformanceTest extends TestCase
             $this->expectExceptionMessageMatches('/function1 < function2/');
             $this->expectExceptionMessageMatches('/Data:/');
             $this->checkMeanTime(false);
-        });
+        }, 10); // For MacOS Environment!
     }
 
     /**
      * @dataProvider dataCallbacks
      */
-    public function testPerformanceMeasureTwo(
+    public function testCheckMeanTimeTwo(
         callable $cb2,
         callable $cb1,
         array $timeMeasures
@@ -79,7 +79,7 @@ final class TestPerformanceTest extends TestCase
     /**
      * @dataProvider dataCallbacks
      */
-    public function testPerformanceMeasureTwoException(
+    public function testCheckMeanTimeTwoException(
         callable $cb2,
         callable $cb1,
         array $timeMeasures
@@ -91,13 +91,13 @@ final class TestPerformanceTest extends TestCase
             $this->expectExceptionMessageMatches('/function1 > function2/');
             $this->expectExceptionMessageMatches('/Data:/');
             $this->checkMeanTime();
-        });
+        }, 10); // For MacOS Environment!
     }
 
     /**
      * @dataProvider dataCallbacks
      */
-    public function testCheckPerformanceAll(
+    public function testCheckPerformance(
         callable $cb1,
         callable $cb2,
         array $timeMeasures
@@ -106,13 +106,13 @@ final class TestPerformanceTest extends TestCase
             $this->checkMeasures($cb1, $cb2, $timeMeasures);
 
             $this->checkPerformance();
-        }, 10);
+        }, 10); // For MacOS Environment!
     }
 
     /**
      * @dataProvider dataCallbacks
      */
-    public function testStudentTest(
+    public function testCheckStudentTest(
         callable $cb1,
         callable $cb2,
         array $timeMeasures
@@ -125,7 +125,7 @@ final class TestPerformanceTest extends TestCase
         });
     }
 
-    public function testStudentTestValueException(): void
+    public function testCheckStudentTestValueException(): void
     {
         $this->timeSignificance = [
             'p1' => 0.0501
@@ -137,7 +137,7 @@ final class TestPerformanceTest extends TestCase
         $this->checkStudentTest();
     }
 
-    public function testStudentTestValueLimes(): void
+    public function testCheckStudentTestValueLimes(): void
     {
         $this->timeSignificance = [
             'p1' => 0.05
@@ -150,7 +150,7 @@ final class TestPerformanceTest extends TestCase
     /**
      * @dataProvider dataCallbacks
      */
-    public function testStudentTestException(
+    public function testCheckStudentTestException(
         callable $cb1,
         callable $cb2,
         array $timeMeasures
