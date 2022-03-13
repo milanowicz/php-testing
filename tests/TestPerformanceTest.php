@@ -43,22 +43,16 @@ final class TestPerformanceTest extends TestCase
         });
     }
 
-    /**
-     * @dataProvider dataCallbacks
-     */
-    public function testCheckMeanTimeOneException(
-        callable $cb1,
-        callable $cb2,
-        array $timeMeasures
-    ): void {
-        $this->tryTest(function () use ($cb1, $cb2, $timeMeasures) {
-            $this->checkMeasures($cb1, $cb2, $timeMeasures);
-
-            $this->expectException(AssertionFailedException::class);
-            $this->expectExceptionMessageMatches('/function1 < function2/');
-            $this->expectExceptionMessageMatches('/Data:/');
-            $this->checkMeanTime(false);
-        }, 10); // For MacOS Environment!
+    public function testCheckMeanTimeOneException(): void
+    {
+        $this->timeMeasures = [
+            'function1' => [4, 5, 4],
+            'function2' => [1, 2, 3],
+        ];
+        $this->expectException(AssertionFailedException::class);
+        $this->expectExceptionMessageMatches('/function1 > function2/');
+        $this->expectExceptionMessageMatches('/Data:/');
+        $this->checkMeanTime();
     }
 
     /**
@@ -76,22 +70,16 @@ final class TestPerformanceTest extends TestCase
         });
     }
 
-    /**
-     * @dataProvider dataCallbacks
-     */
-    public function testCheckMeanTimeTwoException(
-        callable $cb2,
-        callable $cb1,
-        array $timeMeasures
-    ): void {
-        $this->tryTest(function () use ($cb1, $cb2, $timeMeasures) {
-            $this->checkMeasures($cb1, $cb2, $timeMeasures);
-
-            $this->expectException(AssertionFailedException::class);
-            $this->expectExceptionMessageMatches('/function1 > function2/');
-            $this->expectExceptionMessageMatches('/Data:/');
-            $this->checkMeanTime();
-        }, 10); // For MacOS Environment!
+    public function testCheckMeanTimeTwoException(): void
+    {
+        $this->timeMeasures = [
+            'function1' => [1, 2, 3],
+            'function2' => [3, 4, 5],
+        ];
+        $this->expectException(AssertionFailedException::class);
+        $this->expectExceptionMessageMatches('/function1 < function2/');
+        $this->expectExceptionMessageMatches('/Data:/');
+        $this->checkMeanTime(false);
     }
 
     /**
