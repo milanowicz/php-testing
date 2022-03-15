@@ -15,6 +15,7 @@
       "badge": "master"
     }
   },
+  "timeout": 1,
   "mutators": {
     "@default": true
   }

@@ -31,6 +31,22 @@ final class TestPerformanceTest extends TestCase
     /**
      * @dataProvider dataCallbacks
      */
+    public function testClearTimes(
+        callable $cb1,
+        callable $cb2,
+        array $timeMeasures
+    ): void {
+        $this->checkMeasures($cb1, $cb2, $timeMeasures);
+
+        $this->clearTimes();
+        $this->assertCount(0, $this->getTimeMeasures());
+        $this->assertCount(0, $this->getTimeSignificance());
+        $this->assertCount(0, $this->getTimeStats());
+    }
+
+    /**
+     * @dataProvider dataCallbacks
+     */
     public function testCheckMeanTimeOne(
         callable $cb1,
         callable $cb2,
@@ -144,6 +160,7 @@ final class TestPerformanceTest extends TestCase
         array $timeMeasures
     ): void {
         $this->checkMeasures($cb1, $cb2, $timeMeasures);
+        $this->clearTimes();
 
         $this->timeMeasures = $timeMeasures;
         $this->expectException(AssertionFailedException::class);
@@ -161,10 +178,27 @@ final class TestPerformanceTest extends TestCase
         $this->timeMeasures = $timeMeasures;
         $this->measureTime($cb1, $cb2);
 
-        $this->assertCount(0, $this->getTimeSignificance());
-        $this->assertCount(2, $this->getTimeMeasures());
-        $this->assertCount(20, $this->getTimeMeasures()['function1']);
-        $this->assertCount(20, $this->getTimeMeasures()['function2']);
+        $data = $this->getTimeMeasures();
+        $this->assertCount(2, $data);
+        $this->assertCount(20, $data['function1']);
+        foreach ($data['function1'] as $value) {
+            $this->assertIsNumeric($value);
+        }
+        $this->assertCount(20, $data['function2']);
+        foreach ($data['function2'] as $value) {
+            $this->assertIsNumeric($value);
+        }
+
+        $data = $this->getTimeSignificance();
+        $this->assertCount(8, $data);
+        $this->assertArrayHasKey('t', $data);
+        $this->assertArrayHasKey('df', $data);
+        $this->assertArrayHasKey('p1', $data);
+        $this->assertArrayHasKey('p2', $data);
+        $this->assertArrayHasKey('mean1', $data);
+        $this->assertArrayHasKey('mean2', $data);
+        $this->assertArrayHasKey('sd1', $data);
+        $this->assertArrayHasKey('sd2', $data);
 
         $data = $this->getTimeStats();
         $this->assertArrayHasKey('function1', $data);
@@ -184,19 +218,5 @@ final class TestPerformanceTest extends TestCase
         $this->assertGreaterThan(0, $data['function2']['median']);
         $this->assertLessThan(1, $data['function2']['median']);
         $this->assertEquals(20, $data['function2']['n']);
-    }
-
-    /**
-     * @dataProvider dataCallbacks
-     */
-    public function testResetTimes(
-        callable $cb1,
-        callable $cb2,
-        array $timeMeasures
-    ): void {
-        $this->checkMeasures($cb1, $cb2, $timeMeasures);
-        $this->clearTimes();
-        $this->assertCount(0, $this->getTimeMeasures());
-        $this->assertCount(0, $this->getTimeSignificance());
     }
 }

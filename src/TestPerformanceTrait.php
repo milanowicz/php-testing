@@ -10,8 +10,8 @@ use PHPUnit\Framework\ExpectationFailedException;
 trait TestPerformanceTrait
 {
     protected array $timeMeasures = [];
-    protected array $timeStats = [];
     protected array $timeSignificance = [];
+    protected array $timeStats = [];
 
     protected function clearTimes(): self
     {
@@ -98,27 +98,13 @@ trait TestPerformanceTrait
     protected function checkStudentTest(
         float $pValue = 0.05
     ): self {
-        $this->checkTimeSignificance();
-        if ($this->timeSignificance['p1'] > $pValue) {
+        if ($this->getTimeSignificance()['p1'] > $pValue) {
             throw new AssertionFailedException(
                 'p Value is bigger then expected',
-                $this->timeSignificance
+                $this->getTimeSignificance()
             );
         }
         return $this;
-    }
-
-    /**
-     * @throws \MathPHP\Exception\OutOfBoundsException
-     */
-    private function checkTimeSignificance(): void
-    {
-        if (count($this->timeSignificance) === 0) {
-            $this->timeSignificance = Significance::tTestTwoSample(
-                $this->timeMeasures['function1'],
-                $this->timeMeasures['function2'],
-            );
-        }
     }
 
     protected function getTimeMeasures(): array
@@ -126,8 +112,30 @@ trait TestPerformanceTrait
         return $this->timeMeasures;
     }
 
+    /**
+     * @throws \MathPHP\Exception\OutOfBoundsException
+     * @return array [
+     *   t     => t score
+     *   df    => degrees of freedom
+     *   p1    => one-tailed p value
+     *   p2    => two-tailed p value
+     *   mean1 => mean of sample set 1
+     *   mean2 => mean of sample set 2
+     *   sd1   => standard deviation of sample set 1
+     *   sd2   => standard deviation of sample set 2
+     * ]
+     */
     protected function getTimeSignificance(): array
     {
+        if (
+            isset($this->timeMeasures['function1'], $this->timeMeasures['function2'])
+            && count($this->timeSignificance) === 0
+        ) {
+            $this->timeSignificance = Significance::tTestTwoSample(
+                $this->timeMeasures['function1'],
+                $this->timeMeasures['function2'],
+            );
+        }
         return $this->timeSignificance;
     }
 
@@ -137,7 +145,10 @@ trait TestPerformanceTrait
      */
     protected function getTimeStats(): array
     {
-        if (count($this->timeStats) === 0) {
+        if (
+            isset($this->timeMeasures['function1'], $this->timeMeasures['function2'])
+            && count($this->timeStats) === 0
+        ) {
             $this->timeStats = [
                 'function1' => [
                     'mean' => Average::mean($this->timeMeasures['function1']),
