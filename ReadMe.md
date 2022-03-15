@@ -33,35 +33,38 @@ Install by Composer
 Example for using abstract class in your ClassTest:
 
 ```php
-class ClassTest extends Milanowicz\Testing\TestCase
-    public function testSomething(): void
+class UnitTest extends Milanowicz\Testing\TestCase
+{
+    public function testMethod(): void
     {
-        $this->accessMethod((object) Class, (string) Method);
-        $this->createInstanceWithoutConstructor((string) Class);
-        $this->invokeMethod((object) Class, (string) Method, (mixed) ArgumentsForMethod);
-        $this->setProperty((object) Class, (string) Property, (mixed) PropertyValue);
-        $this->getProperty((object) Class, (string) Property);
-        $this->tryTest((callable) Function, (int) NumberOfTries);
-        $this->loopingTest((callable) Function, (int) NumberOfTries);
-        // and all other Traits too, see below
+        // All Traits in abstract Milanowicz\Testing\TestCase are extends!
+        // See below for further details from Trait methods
     }
 }
 ```
 
-OR import Trait(s) for use it:
+OR import Trait(s) for use them:
 
 ```php
-class ClassTest extends What\Ever\TestCase
+class UnitTest extends What\Ever\TestCase
+{
     use Milanowicz\Testing\TestTrait;
 
-    public function testSomething(): void
+    public function testMethod(): void
     {
+        // Access to private or protected Method
         $this->accessMethod((object) Class, (string) Method);
+        // Create class without constructor
         $this->createInstanceWithoutConstructor((string) Class);
+        // Call a private or protected Method with argument(s)
         $this->invokeMethod((object) Class, (string) Method, (mixed) ArgumentsForMethod);
+        // Set a value to private or protected property 
         $this->setProperty((object) Class, (string) Property, (mixed) PropertyValue);
+        // Get a value from a private or protected property back
         $this->getProperty((object) Class, (string) Property);
+        // Execute test and when it's throw an exception, then try it again
         $this->tryTest((callable) Function, (int) NumberOfTries);
+        // Execute test of number tries to check, if it runs successfully multiply times
         $this->loopingTest((callable) Function, (int) NumberOfTries);
     }
 }
@@ -71,10 +74,11 @@ class ClassTest extends What\Ever\TestCase
 TestPerformanceTrait is to execute two functions and see which was faster of those:
 
 ```php
-class ClassTest extends What\Ever\TestCase
+class UnitTest extends What\Ever\TestCase
+{
     use Milanowicz\Testing\TestPerformanceTrait;
 
-    public function testSomething(): void
+    public function testMethod(): void
     {
         $cb1 = static function () {
             usleep(100);
@@ -83,7 +87,8 @@ class ClassTest extends What\Ever\TestCase
             usleep(200);
         };
 
-        $this->measureTime((callable) $cb1, (callable) $cb2, (int) NumberOfTries);
+        // Call both methods after each other and save run times from them
+        $this->measureTime((callable) $cb1, (callable) $cb2, (int) $n = 20);
         // Check AVG and Student-Test
         $this->checkPerformance((bool) $function1 = true, (float) $pValue = 0.05);
         // $cb1 should be faster 
@@ -92,13 +97,14 @@ class ClassTest extends What\Ever\TestCase
         $this->checkMeanTime((bool) false);
         // Check if $cb1 is significant faster
         $this->checkStudentTest((float) $pValue = 0.05);
-
         // Get all time measures
         $this->getTimeMeasures();
         // Get both in array with AVG, STD and Median 
         $this->getTimeStats();
-        // Reset all times 
-        $this->resetTimes(); 
+        // Get result from Student-T test 
+        $this->getTimeSignificance();
+        // Clear all times and measures
+        $this->clearTimes(); 
     }
 }
 ```
@@ -109,20 +115,20 @@ class ClassTest extends What\Ever\TestCase
 Usage for AssertionFailedException to get data in Exception message:
 
 ```php
-$t = new AssertionFailedException(
+$e = new AssertionFailedException(
     (string) $message = 'Testing',
     (array) $data = [1],
     (int) $code = 1,
     (null|Throwable) $previous = null,
 );
-$t->toArray(); // => [1]
-$t->count(); // => 1
-$t->toString(); // => Message and Data as String
+$e->toArray(); // => [1]
+$e->count(); // => 1
+$e->toString(); // => Message and Data as String
 
-// and all Exception methods are available like this:
-$t->getMessage(); // => Message and Data as String
-$t->getCode(); // => 1
-$t->getPrevious(); // => null OR a Throwable object
+// and all Exception methods are available:
+$e->getMessage(); // => Message and Data as String
+$e->getCode(); // => 1
+$e->getPrevious(); // => null OR a Throwable object
 ```
 
 
@@ -133,14 +139,14 @@ Run all test suites
 > composer tests
 ```
 
-Run PHP CS Fixer to code styling
+Run PHP Code Styling
 ```shell
 > composer style
 ```
 
-Run PHPStan to analyze
+Run PHPStan to analyze code
 ```shell
-> composer anlayze
+> composer analyze
 ```
 
 Run PHPUnit tests
