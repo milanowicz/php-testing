@@ -54,6 +54,14 @@ class UnitTest extends What\Ever\TestCase
     {
         // Access to private or protected Method
         $this->accessMethod((object) Class, (string) Method);
+        // Run test(s) in it and when an assertion failed would throw, see message and data for the reason
+        $this->catchAssertionFailing((array) $data, function ($data) {
+            $this->assertEquals('whatEver', $data['whatEver']);
+        });
+        // Run test(s) in it and when any Error or Exception would throw, see message and data for the reason
+        $this->catchErrorWithData((array) $data, function ($data) {
+            $this->assertEquals('whatEver', $data['whatEver']);
+        });
         // Create class without constructor
         $this->createInstanceWithoutConstructor((string) Class);
         // Call a private or protected Method with argument(s)
@@ -62,10 +70,10 @@ class UnitTest extends What\Ever\TestCase
         $this->setProperty((object) Class, (string) Property, (mixed) PropertyValue);
         // Get a value from a private or protected property back
         $this->getProperty((object) Class, (string) Property);
+        // Execute test of number tries to check, if it runs multiply times successfully
+        $this->testLoops((callable) Function, (int) NumberOfTries, (int) NumberOfErrors);
         // Execute test and when it's throw an exception, then try it again
         $this->tryTest((callable) Function, (int) NumberOfTries);
-        // Execute test of number tries to check, if it runs successfully multiply times
-        $this->loopingTest((callable) Function, (int) NumberOfTries);
     }
 }
 
@@ -80,6 +88,7 @@ class UnitTest extends What\Ever\TestCase
 
     public function testMethod(): void
     {
+        // Example functions
         $cb1 = static function () {
             usleep(100);
         };

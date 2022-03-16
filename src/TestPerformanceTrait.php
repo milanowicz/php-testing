@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Milanowicz\Testing;
 
 use MathPHP\Statistics\{Average, Descriptive, Significance};
-use PHPUnit\Framework\ExpectationFailedException;
 
 trait TestPerformanceTrait
 {
@@ -59,35 +58,28 @@ trait TestPerformanceTrait
     }
 
     /**
+     * @throws AssertionFailedException
      * @throws \MathPHP\Exception\BadDataException
      * @throws \MathPHP\Exception\OutOfBoundsException
-     * @throws AssertionFailedException
      */
     protected function checkMeanTime(
         bool $function1 = true
     ): self {
-        try {
+        $this->catchAssertionFailing($this->getTimeStats(), function ($data) use ($function1) {
             if ($function1) {
                 $this->assertGreaterThan(
-                    $this->getTimeStats()['function1']['mean'],
-                    $this->getTimeStats()['function2']['mean'],
+                    $data['function1']['mean'],
+                    $data['function2']['mean'],
                     'function1 > function2'
                 );
             } else {
                 $this->assertLessThan(
-                    $this->getTimeStats()['function1']['mean'],
-                    $this->getTimeStats()['function2']['mean'],
+                    $data['function1']['mean'],
+                    $data['function2']['mean'],
                     'function1 < function2'
                 );
             }
-        } catch (ExpectationFailedException $exception) {
-            throw new AssertionFailedException(
-                $exception->getMessage(),
-                $this->getTimeStats(),
-                $exception->getCode(),
-                $exception
-            );
-        }
+        });
         return $this;
     }
 

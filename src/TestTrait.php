@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Milanowicz\Testing;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\ExpectationFailedException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -23,6 +25,46 @@ trait TestTrait
         /** @infection-ignore-all */
         $this->accessible($reflection);
         return $reflection;
+    }
+
+    /**
+     * @throws AssertionFailedException
+     */
+    final protected function catchAssertionFailing(
+        array $data,
+        callable $function
+    ): self {
+        try {
+            $function($data);
+        } catch (ExpectationFailedException $exception) {
+            throw new AssertionFailedException(
+                $exception->getMessage(),
+                $data,
+                $exception->getCode(),
+                $exception
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * @throws AssertionFailedException
+     */
+    final protected function catchErrorWithData(
+        array $data,
+        callable $function
+    ): self {
+        try {
+            $function($data);
+        } catch (Throwable $exception) {
+            throw new AssertionFailedException(
+                $exception->getMessage(),
+                $data,
+                $exception->getCode(),
+                $exception
+            );
+        }
+        return $this;
     }
 
     /**
@@ -121,43 +163,72 @@ trait TestTrait
     }
 
     /**
+     * @throws InvalidArgumentException
+     * @throws Throwable
+     */
+    final protected function testLoops(
+        callable $func,
+        int $tries = 5,
+        int $errors = 0
+    ): array {
+        $this
+            ->checkNotToBeNegative($tries, '$tries')
+            ->checkNotToBeNegative($errors, '$errors');
+        $countTries = 0;
+        $countErrors = 0;
+        while ($tries > 0) {
+            try {
+                $func();
+                $countTries++;
+                $tries--;
+            } catch (Throwable $t) {
+                $countErrors++;
+                if ($errors < 1) {
+                    throw $t;
+                }
+                $errors--;
+            }
+        }
+        return [$countTries, $countErrors];
+    }
+
+    /**
+     * @throws InvalidArgumentException
      * @throws Throwable
      */
     final protected function tryTest(
         callable $func,
         int $tries = 3
-    ): void {
+    ): array {
+        $this->checkNotToBeNegative($tries, '$tries');
+        $counter = 0;
+        $errors = 0;
         do {
             try {
                 $func();
+                $counter++;
                 $tries = 0;
             } catch (Throwable $t) {
                 $tries--;
+                $errors++;
                 if ($tries < 1) {
                     throw $t;
                 }
             }
         } while ($tries !== 0);
+        return [$counter, $errors];
     }
 
     /**
-     * @throws Throwable
+     * @throws InvalidArgumentException
      */
-    final protected function loopingTest(
-        callable $func,
-        int $tries = 5
-    ): void {
-        $error = $tries;
-        while ($tries > 0) {
-            try {
-                $func();
-                $tries--;
-            } catch (Throwable $t) {
-                $error--;
-                if ($error < 1) {
-                    throw $t;
-                }
-            }
+    private function checkNotToBeNegative(
+        int $number,
+        string $prefixMessage
+    ): self {
+        if ($number < 0) {
+            throw new InvalidArgumentException($prefixMessage . ' could not be negative => ' . $number);
         }
+        return $this;
     }
 }
