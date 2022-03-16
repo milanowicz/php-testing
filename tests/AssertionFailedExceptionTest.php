@@ -55,8 +55,10 @@ final class AssertionFailedExceptionTest extends TestCase
 
         $data = [
             'asdsa' => 1,
+            'sdsdsds' => 1,
             'array' => [
-                'test' => 2
+                'test' => 2,
+                'test2' => 3,
             ]
         ];
 
@@ -65,8 +67,10 @@ final class AssertionFailedExceptionTest extends TestCase
             'TESTING' . PHP_EOL . PHP_EOL
             . ' Data:' . PHP_EOL
             . '  asdsa => 1' . PHP_EOL
+            . '  sdsdsds => 1' . PHP_EOL
             . '  array:' . PHP_EOL
-            . '    test => 2' . PHP_EOL . PHP_EOL,
+            . '    test => 2' . PHP_EOL
+            . '    test2 => 3' . PHP_EOL . PHP_EOL,
             $t->toString()
         );
     }
