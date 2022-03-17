@@ -57,11 +57,7 @@ class UnitTest extends What\Ever\TestCase
         // Run test(s) in it and when an assertion failed would throw, see message and data for the reason
         $this->catchAssertionFailing((array) $data, function ($data) {
             $this->assertEquals('whatEver', $data['whatEver']);
-        });
-        // Run test(s) in it and when any Error or Exception would throw, see message and data for the reason
-        $this->catchErrorWithData((array) $data, function ($data) {
-            $this->assertEquals('whatEver', $data['whatEver']);
-        });
+        }, (string) $catchData = ExpectationFailedException::class);
         // Create class without constructor
         $this->createInstanceWithoutConstructor((string) Class);
         // Call a private or protected Method with argument(s)

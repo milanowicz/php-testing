@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\ExpectationFailedException;
 use RuntimeException;
 use stdClass;
+use Throwable;
 
 final class TestCaseTest extends TestCase
 {
@@ -172,36 +173,7 @@ final class TestCaseTest extends TestCase
     /**
      * @dataProvider dataCountObject
      */
-    public function testCatchErrorWithData(stdClass $count): void
-    {
-        $data = [1, 2, 3, 4];
-        $cb = static function () use ($count) {
-            $count->counter++;
-        };
-        $this->catchErrorWithData($data, $cb);
-        $this->assertEquals(1, $count->counter);
-    }
-
-    /**
-     * @dataProvider dataCountObject
-     */
-    public function testCatchErrorWithDataException(stdClass $count): void
-    {
-        $this->expectException(AssertionFailedException::class);
-        $this->expectExceptionMessageMatches('/Hello Exception/');
-        $this->expectExceptionMessageMatches('/Data:/');
-        $data = ['a' => 1];
-        $cb = static function () use ($count) {
-            $count->counter++;
-            throw new ExpectationFailedException('Hello Exception');
-        };
-        $this->catchErrorWithData($data, $cb);
-    }
-
-    /**
-     * @dataProvider dataCountObject
-     */
-    public function testCatchErrorWithDataError(stdClass $count): void
+    public function testCatchAssertionFailingErrorAndThrowAssertion(stdClass $count): void
     {
         $this->expectException(AssertionFailedException::class);
         $this->expectExceptionMessageMatches('/Hello Error/');
@@ -211,7 +183,7 @@ final class TestCaseTest extends TestCase
             $count->counter++;
             throw new Error('Hello Error');
         };
-        $this->catchErrorWithData($data, $cb);
+        $this->catchAssertionFailing($data, $cb, Throwable::class);
     }
 
     /**

@@ -29,40 +29,26 @@ trait TestTrait
 
     /**
      * @throws AssertionFailedException
+     * @throws Throwable
      */
     final protected function catchAssertionFailing(
         array $data,
-        callable $function
-    ): self {
-        try {
-            $function($data);
-        } catch (ExpectationFailedException $exception) {
-            throw new AssertionFailedException(
-                $exception->getMessage(),
-                $data,
-                $exception->getCode(),
-                $exception
-            );
-        }
-        return $this;
-    }
-
-    /**
-     * @throws AssertionFailedException
-     */
-    final protected function catchErrorWithData(
-        array $data,
-        callable $function
+        callable $function,
+        string $catchData = ExpectationFailedException::class
     ): self {
         try {
             $function($data);
         } catch (Throwable $exception) {
-            throw new AssertionFailedException(
-                $exception->getMessage(),
-                $data,
-                $exception->getCode(),
-                $exception
-            );
+            if ($exception instanceof $catchData) {
+                throw new AssertionFailedException(
+                    $exception->getMessage(),
+                    $data,
+                    $exception->getCode(),
+                    $exception
+                );
+            }
+
+            throw $exception;
         }
         return $this;
     }
