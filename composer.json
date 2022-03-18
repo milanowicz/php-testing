@@ -14,7 +14,9 @@
   },
   "require-dev": {
     "infection/infection": "^0.26",
+    "jangregor/phpstan-prophecy": "^1.0",
     "markrogoyski/math-php": "^2.5",
+    "phpspec/prophecy-phpunit": "^2.0",
     "phpstan/phpstan": "^1.4",
     "phpunit/phpunit": "^9.5",
     "slevomat/coding-standard": "^7.0"

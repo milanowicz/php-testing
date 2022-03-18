@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace Milanowicz\Testing;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\Exception\Prophecy\MethodProphecyException;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 final class AssertionFailedExceptionTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testConstruct(): void
     {
         $t = new AssertionFailedException('TESTING');
@@ -17,7 +21,7 @@ final class AssertionFailedExceptionTest extends TestCase
         $this->assertStringContainsString('AssertionFailedExceptionTest.php', $t->getFile());
         $this->assertStringContainsString('AssertionFailedExceptionTest', $t->getSerializableTrace()[0]['class']);
         $this->assertStringContainsString('AssertionFailedExceptionTest', $t->getTrace()[0]['class'] ?? '');
-        $this->assertEquals(13, $t->getLine());
+        $this->assertGreaterThan(13, $t->getLine());
     }
 
     public function testCount(): void
@@ -73,5 +77,30 @@ final class AssertionFailedExceptionTest extends TestCase
             . '    test2 => 3' . PHP_EOL . PHP_EOL,
             $t->toString()
         );
+    }
+
+    public function testProphesizeInterface(): void
+    {
+        $exception = $this->prophesize(AssertionFailedExceptionInterface::class);
+        $exception->count()->willReturn(2);
+        $exception->toArray()->willReturn([1, 2]);
+        $exception->toString()->willReturn('HELLO Message');
+
+        $class = new TestParentObject(object: $exception->reveal());
+
+        $this->assertEquals(2, $class->getObject()->count());
+        $this->assertEquals([1, 2], $class->getObject()->toArray());
+        $this->assertEquals('HELLO Message', $class->getObject()->toString());
+    }
+
+    public function testProphesizeInterfaceError(): void
+    {
+        $this->expectException(MethodProphecyException::class);
+        $this->expectExceptionMessageMatches('/Can not add prophecy for a method/');
+
+        $exception = $this->prophesize(AssertionFailedExceptionInterface::class);
+        $exception->getMessage()->willReturn('HELLO Message');
+
+        new TestParentObject(object: $exception->reveal());
     }
 }

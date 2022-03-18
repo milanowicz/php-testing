@@ -61,9 +61,7 @@ trait TestTrait
         string $className
     ): object {
         if (!class_exists($className)) {
-            throw new RuntimeException(
-                sprintf('Class %s not found', $className)
-            );
+            throw new RuntimeException("Class $className not found");
         }
 
         return (new ReflectionClass($className))->newInstanceWithoutConstructor();
@@ -91,13 +89,10 @@ trait TestTrait
         mixed $value = null
     ): ReflectionProperty {
         $reflectionProperty = $this->getReflectionProperty($class, $property);
-        if ($reflectionProperty !== null) {
-            if ($value !== null) {
-                $reflectionProperty->setValue($class, $value);
-            }
-            return $reflectionProperty;
+        if ($value !== null) {
+            $reflectionProperty->setValue($class, $value);
         }
-        throw new RuntimeException('Could not find property ' . $property);
+        return $reflectionProperty;
     }
 
     /**
@@ -107,17 +102,18 @@ trait TestTrait
         object $class,
         string $property
     ): mixed {
-        $reflectionProperty = $this->getReflectionProperty($class, $property);
-        if ($reflectionProperty !== null) {
-            return $reflectionProperty->getValue($class);
-        }
-        throw new RuntimeException('Could not find property ' . $property);
+        return $this
+            ->getReflectionProperty($class, $property)
+            ->getValue($class);
     }
 
+    /**
+     * @throws RuntimeException
+     */
     private function getReflectionProperty(
         object $class,
         string $property
-    ): null|ReflectionProperty {
+    ): ReflectionProperty {
         $reflectionClass = new ReflectionClass($class);
         do {
             if ($reflectionClass->hasProperty($property)) {
@@ -131,7 +127,8 @@ trait TestTrait
             $this->accessible($reflectionProperty);
             return $reflectionProperty;
         }
-        return null;
+
+        throw new RuntimeException('Could not find property ' . $property);
     }
 
     /**
@@ -164,8 +161,8 @@ trait TestTrait
         $countErrors = 0;
         while ($tries > 0) {
             try {
-                $func();
                 $countTries++;
+                $func();
                 $tries--;
             } catch (Throwable $t) {
                 $countErrors++;
@@ -187,12 +184,12 @@ trait TestTrait
         int $tries = 3
     ): array {
         $this->checkNotToBeNegative($tries, '$tries');
-        $counter = 0;
+        $countTries = 0;
         $errors = 0;
         do {
             try {
+                $countTries++;
                 $func();
-                $counter++;
                 $tries = 0;
             } catch (Throwable $t) {
                 $tries--;
@@ -202,7 +199,7 @@ trait TestTrait
                 }
             }
         } while ($tries !== 0);
-        return [$counter, $errors];
+        return [$countTries, $errors];
     }
 
     /**

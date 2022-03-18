@@ -212,7 +212,7 @@ final class TestCaseTest extends TestCase
         };
 
         $result = $this->testLoops($cb, 1, 1);
-        $this->assertEquals([1, 1], $result);
+        $this->assertEquals([2, 1], $result);
     }
 
     /**
@@ -313,7 +313,7 @@ final class TestCaseTest extends TestCase
         };
 
         $result = $this->tryTest($cb, 2);
-        $this->assertEquals([1, 1], $result);
+        $this->assertEquals([2, 1], $result);
     }
 
     /**
