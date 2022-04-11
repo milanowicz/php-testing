@@ -729,16 +729,16 @@
         },
         {
             "name": "markrogoyski/math-php",
-            "version": "v2.5.0",
+            "version": "v2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/markrogoyski/math-php.git",
-                "reference": "ca71ca97dc136e7bb9e9e1fe05782f343a5692d4"
+                "reference": "85d7d7fe205a6df2b20f956720e25341f3b1462a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markrogoyski/math-php/zipball/ca71ca97dc136e7bb9e9e1fe05782f343a5692d4",
-                "reference": "ca71ca97dc136e7bb9e9e1fe05782f343a5692d4",
+                "url": "https://api.github.com/repos/markrogoyski/math-php/zipball/85d7d7fe205a6df2b20f956720e25341f3b1462a",
+                "reference": "85d7d7fe205a6df2b20f956720e25341f3b1462a",
                 "shasum": ""
             },
             "require": {
@@ -798,9 +798,9 @@
             ],
             "support": {
                 "issues": "https://github.com/markrogoyski/math-php/issues",
-                "source": "https://github.com/markrogoyski/math-php/tree/v2.5.0"
+                "source": "https://github.com/markrogoyski/math-php/tree/v2.6.0"
             },
-            "time": "2021-11-22T05:14:07+00:00"
+            "time": "2022-04-10T05:15:37+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -4602,5 +4602,5 @@
     "platform-overrides": {
         "php": "8.0"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
