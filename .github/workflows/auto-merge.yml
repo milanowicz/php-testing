@@ -12,6 +12,11 @@ jobs:
     name: Merge me!
 
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Merge me!
