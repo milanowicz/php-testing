@@ -19,7 +19,7 @@
     "phpspec/prophecy-phpunit": "^v2.3.0",
     "phpstan/phpstan": "^1.12.13",
     "phpunit/phpunit": "^9.6.22",
-    "slevomat/coding-standard": "^7.0"
+    "slevomat/coding-standard": "^8.15"
   },
   "autoload": {
     "psr-4": {
