@@ -46,7 +46,6 @@ trait TestPerformanceTrait
      * @throws AssertionFailedException
      * @throws \MathPHP\Exception\BadDataException
      * @throws \MathPHP\Exception\OutOfBoundsException
-     * @throws \PHPUnit\Framework\ExpectationFailedException
      */
     protected function checkPerformance(
         bool $function1 = true,

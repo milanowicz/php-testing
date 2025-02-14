@@ -7,6 +7,6 @@ parameters:
         - tests
     level: 7
     phpVersion: 80000
-    checkMissingIterableValueType: false
     ignoreErrors:
+        - identifier: missingType.iterableValue
         - '#Call to an undefined method object::(count|toArray|toString)#'
